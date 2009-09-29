@@ -1,0 +1,3 @@
+class ShiftSubtitle
+	
+end
