@@ -1,5 +1,7 @@
 =begin rdoc
   controllare che se tutti i parametri sono giusti il ritorno è 0
+
+  verificare il formato dei vari parametri che sia corretto
 	
 =end
 require File.expand_path(File.dirname(__FILE__) + '/../lib/shift_subtitle')
@@ -21,14 +23,14 @@ describe ShiftSubtitle do
 		
 	end
 
-	def start_with(argv=[])
-		do_should_print_usage
-		@result = @shift_subtitle.start argv
-	end
-
 	context "starting up" do
 		after(:each) do
 			@result.should == 1
+		end
+		
+		def start_with(argv=[])
+			do_should_print_usage
+			@result = @shift_subtitle.start argv
 		end
 
 		context "with '-h' paramenter"do
@@ -83,6 +85,10 @@ describe ShiftSubtitle do
 		context "with all parameters"do
 			before(:each) do
 				start_with %w{--operation=add --time=02,123 infile.srt outfile.srt}
+			end
+			
+			def start_with(argv=[])
+				@result = @shift_subtitle.start argv
 			end
 
 			it "should have all data" do

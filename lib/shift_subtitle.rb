@@ -6,7 +6,12 @@ class ShiftSubtitle
 	attr :inputfile
 	attr :outputfile
 
+	private
+	def parameters_valid?
+		@operation && @time && @inputfile && @outputfile
+	end
 
+	public
 	def initialize(messenger)
 		@messenger = messenger
 	end
@@ -32,8 +37,12 @@ class ShiftSubtitle
 		@time = options[:time]
 		@inputfile = argv[0]
 		@outputfile = argv[1]
-		@messenger.puts optparse.to_s
-		return 1
+		unless parameters_valid?
+		  @messenger.puts optparse.to_s
+		  return 1
+		end
+
+		return 0
 	end
 end
 if $0 == __FILE__
