@@ -11,12 +11,7 @@ class ShiftSubtitle
 		@operation && @time && @inputfile && @outputfile
 	end
 
-	public
-	def initialize(messenger)
-		@messenger = messenger
-	end
-
-	def start(argv=[])
+	def parse(argv)
 		options = {}
 		optparse = OptionParser.new do |o|
 			o.banner = "Usage: shift_subtitle [OPTIONS] <input_file> <output_file>"
@@ -26,19 +21,29 @@ class ShiftSubtitle
 			o.on("-t", "--time=<time>", String,
 	       			"Time to shift in the format 'ss,mmm'")   do |options[:time]| end
 			o.separator   ""
-			o.on_tail("-h", "--help", "Show this help message.") do 
-				@messenger.puts o.to_s; 
-				return 1
-			end
+			o.on_tail("-h", "--help", "Show this help message.") do |options[:help]| end
 			o.parse!(argv)
 		end
-			
+		return options, optparse.to_s
+	end
+
+	def save_options(options, argv)
 		@operation = options[:operation]
 		@time = options[:time]
 		@inputfile = argv[0]
 		@outputfile = argv[1]
-		unless parameters_valid?
-		  @messenger.puts optparse.to_s
+	end
+
+	public
+	def initialize(messenger)
+		@messenger = messenger
+	end
+
+	def start(argv=[])
+		options, usage_msg = parse argv
+		save_options options, argv
+		if !parameters_valid? || options[:help] 
+		  @messenger.puts usage_msg
 		  return 1
 		end
 

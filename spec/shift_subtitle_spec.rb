@@ -12,17 +12,6 @@ describe ShiftSubtitle do
 		@shift_subtitle = ShiftSubtitle.new(@messenger)
 	end
 
-	def do_should_print_usage
-		@messenger.should_receive(:puts).with(
-			"Usage: shift_subtitle [OPTIONS] <input_file> <output_file>\n" 			+
-			"\n" 										+
-			"    -o, --operation=[add|sub]        Type of operation: add or subtract.\n" 	+
-			"    -t, --time=<time>                Time to shift in the format 'ss,mmm'\n" 	+
-			"\n" 										+
-			"    -h, --help                       Show this help message.\n")
-		
-	end
-
 	context "starting up" do
 		after(:each) do
 			@result.should == 1
@@ -31,6 +20,17 @@ describe ShiftSubtitle do
 		def start_with(argv=[])
 			do_should_print_usage
 			@result = @shift_subtitle.start argv
+		end
+
+		def do_should_print_usage
+			@messenger.should_receive(:puts).with(
+				"Usage: shift_subtitle [OPTIONS] <input_file> <output_file>\n" 			+
+				"\n" 										+
+				"    -o, --operation=[add|sub]        Type of operation: add or subtract.\n" 	+
+				"    -t, --time=<time>                Time to shift in the format 'ss,mmm'\n" 	+
+				"\n" 										+
+				"    -h, --help                       Show this help message.\n")
+		
 		end
 
 		context "with '-h' paramenter"do
