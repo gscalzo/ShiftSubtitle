@@ -50,7 +50,3 @@ class ShiftSubtitle
 		return 0
 	end
 end
-if $0 == __FILE__
-	shift_subtitle = ShiftSubtitle.new(STDOUT)
-	shift_subtitle.start(ARGV)
-end
