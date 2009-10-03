@@ -27,6 +27,5 @@ describe OperationPerformer do
 				'the government is implementing a new policy...']			
 			output.should == expected
 		end
-
 	end
 end

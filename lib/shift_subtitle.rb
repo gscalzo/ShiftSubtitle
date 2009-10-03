@@ -1,3 +1,5 @@
+require File.expand_path(File.dirname(__FILE__) + '/../lib/operation_performer')
+require File.expand_path(File.dirname(__FILE__) + '/../lib/add')
 require 'optparse'
 
 class ShiftSubtitle
@@ -47,6 +49,17 @@ class ShiftSubtitle
 			@messenger.puts usage_msg
 			@kernel.exit 1
 		else
+			lines=File.open(@inputfile).map do |line|
+				line.chomp
+    			end
+			operation = @operation == 'add' ? Add.new(@time) : Sub(@time)
+
+			output = OperationPerformer.new(operation).on(lines).map { |line| line + "\n" }
+ 
+			File.open(@outputfile, 'w') do |f| 
+				f.write output
+			end
+
 			@kernel.exit 0
 		end
 	end

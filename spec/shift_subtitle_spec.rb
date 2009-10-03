@@ -83,23 +83,43 @@ describe ShiftSubtitle do
 	end
 
 	context "starting up" do
-		context "with all parameters"do
-			before(:each) do
-				@kernel.should_receive(:exit).with(0)
-				start_with %w{--operation=add --time=02,123 infile.srt outfile.srt}
-			end
+		before(:each) do
+			@kernel.should_receive(:exit).with(0)
+		end
 			
-			def start_with(argv=[])
-				@shift_subtitle.start argv
-			end
-
-			it "should have all data" do
-				@shift_subtitle.operation.should =='add'
-				@shift_subtitle.time.should =='02,123'
-				@shift_subtitle.inputfile.should =='infile.srt'
-				@shift_subtitle.outputfile.should =='outfile.srt'
-			end
+		def start_with(argv=[])
+			@shift_subtitle.start argv
 		end
 
+		context "applied to a subtitle file" do
+			it "should create a shifted subtitle file" do
+				linetext = [ 
+					"645\n",
+					"01:31:51,210 --> 01:31:54,893\n",
+					"the government is implementing a new policy...\n",
+					"\n",
+					"646\n",
+					"01:31:54,928 --> 01:31:57,664\n",
+					"In connection with a dramatic increase\n",
+					"in crime in certain neighbourhoods,\n",]
+				
+				expected = [ 
+					"645\n",
+					"01:31:53,710 --> 01:31:57,393\n",
+					"the government is implementing a new policy...\n",
+					"\n",
+					"646\n",
+					"01:31:57,428 --> 01:32:00,164\n",
+					"In connection with a dramatic increase\n",
+					"in crime in certain neighbourhoods,\n",]
+						
+    				File.should_receive(:open).with("infile.srt").and_return(linetext)
+				out_file_mock = mock(File)
+    				File.should_receive(:open).with("outfile.srt", "w").and_yield(out_file_mock)
+				out_file_mock.should_receive(:write).with(expected)
+
+				start_with %w{--operation=add --time=02,500 infile.srt outfile.srt}
+			end
+		end
 	end
 end
