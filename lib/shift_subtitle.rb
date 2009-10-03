@@ -35,18 +35,19 @@ class ShiftSubtitle
 	end
 
 	public
-	def initialize(messenger)
+	def initialize(messenger,kernel=Kernel)
 		@messenger = messenger
+		@kernel = kernel
 	end
 
 	def start(argv=[])
 		options, usage_msg = parse argv
 		save_options options, argv
 		if !parameters_valid? || options[:help] 
-		  @messenger.puts usage_msg
-		  return 1
+			@messenger.puts usage_msg
+			@kernel.exit 1
+		else
+			@kernel.exit 0
 		end
-
-		return 0
 	end
 end

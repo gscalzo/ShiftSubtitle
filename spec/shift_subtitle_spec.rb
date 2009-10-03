@@ -7,19 +7,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/../lib/shift_subtitle')
 
 describe ShiftSubtitle do
-	before(:each) do
+	before :each do
 		@messenger = mock('messenger')
-		@shift_subtitle = ShiftSubtitle.new(@messenger)
+		@kernel = mock(Kernel)
+		@shift_subtitle = ShiftSubtitle.new(@messenger, @kernel)
 	end
 
 	context "starting up" do
-		after(:each) do
-			@result.should == 1
+		before :each do
+			@kernel.should_receive(:exit).with(1)
 		end
 		
 		def start_with(argv=[])
 			do_should_print_usage
-			@result = @shift_subtitle.start argv
+			@shift_subtitle.start argv
 		end
 
 		def do_should_print_usage
@@ -84,11 +85,12 @@ describe ShiftSubtitle do
 	context "starting up" do
 		context "with all parameters"do
 			before(:each) do
+				@kernel.should_receive(:exit).with(0)
 				start_with %w{--operation=add --time=02,123 infile.srt outfile.srt}
 			end
 			
 			def start_with(argv=[])
-				@result = @shift_subtitle.start argv
+				@shift_subtitle.start argv
 			end
 
 			it "should have all data" do
@@ -96,9 +98,6 @@ describe ShiftSubtitle do
 				@shift_subtitle.time.should =='02,123'
 				@shift_subtitle.inputfile.should =='infile.srt'
 				@shift_subtitle.outputfile.should =='outfile.srt'
-			end
-			it "should return 0" do
-				@result.should == 0
 			end
 		end
 
