@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+#START:script
+$LOAD_PATH.push File.join(File.dirname(__FILE__),"..","lib")
+require 'shift_subtitle'
+
+shift_subtitle = ShiftSubtitle.new(STDOUT)
+shift_subtitle.start($*)
+#END:script
+

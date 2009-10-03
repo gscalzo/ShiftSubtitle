@@ -3,7 +3,7 @@ class Operation
 		@value = as_float(v)
 	end
 
-	def to(time_to_adjust)
+	def on(time_to_adjust)
 		format(operation(time_to_adjust, @value))
 	end
 
