@@ -1,9 +1,3 @@
-=begin rdoc
-  controllare che se tutti i parametri sono giusti il ritorno è 0
-
-  verificare il formato dei vari parametri che sia corretto
-	
-=end
 $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
 require 'shift_subtitle'
 
@@ -67,6 +61,18 @@ describe ShiftSubtitle do
 				start_with %w{infile.srt, outfile.srt}
 			end
 		end
+
+		context "with not valid operation" do
+			it "should print usage" do
+				start_with %w{--operation wer --time 02,500 infile.srt outfile.srt}
+			end
+		end
+
+		context "with not valid time" do
+			it "should print usage" do
+				start_with %w{--operation add --time 02.500 infile.srt outfile.srt}
+			end
+		end
 	end
 
 	context "starting up" do
@@ -93,6 +99,24 @@ describe ShiftSubtitle do
     				File.should_receive(:open).with("outfile.srt", "w").and_yield(out_file_mock)
 
 				start_with %w{--operation add --time 02,500 infile.srt outfile.srt}
+			end
+			
+			context "and 1,500 as time" do
+				it "should print all parameters" do
+					@messenger.should_receive(:puts).with(
+						"Shifting with following parameters:\n" +
+						"\n" 				    +
+						"Operation:   [add]\n"              +	
+						"Time:        [1,500]\n"           +	
+						"Input file:  [infile.srt]\n"       +	
+						"Output file: [outfile.srt]"	    )
+
+    					File.should_receive(:open).with("infile.srt").and_return([])
+					out_file_mock = mock(File, :null_object => true)
+    					File.should_receive(:open).with("outfile.srt", "w").and_yield(out_file_mock)
+
+					start_with %w{--operation add --time 1,500 infile.srt outfile.srt}
+				end
 			end
 
 			def mock_file(inputlines, outputlines)

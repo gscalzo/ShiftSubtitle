@@ -7,7 +7,15 @@ require 'optparse'
 class ShiftSubtitle
 	private
 	def parameters_valid?
-		@operation && @time && @inputfile && @outputfile
+		operation_valid? && time_valid? && @inputfile && @outputfile
+	end
+
+	def operation_valid?
+		@operation && (@operation == 'add' || @operation == 'sub')
+	end
+
+	def time_valid?
+		@time && @time =~ /\d?\d,\d{3}/
 	end
 
 	def parse(argv)
