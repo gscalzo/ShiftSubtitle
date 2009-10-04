@@ -1,5 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + '/../lib/operation_performer')
-require File.expand_path(File.dirname(__FILE__) + '/../lib/add')
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+require 'operation_performer'
+require 'add'
 
 describe OperationPerformer do
 	context "with parameters" do

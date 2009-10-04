@@ -1,13 +1,10 @@
-require File.expand_path(File.dirname(__FILE__) + '/../lib/operation_performer')
-require File.expand_path(File.dirname(__FILE__) + '/../lib/add')
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+require 'operation_performer'
+require 'add'
+require 'sub'
 require 'optparse'
 
 class ShiftSubtitle
-	attr :operation
-	attr :time
-	attr :inputfile
-	attr :outputfile
-
 	private
 	def parameters_valid?
 		@operation && @time && @inputfile && @outputfile
@@ -18,22 +15,51 @@ class ShiftSubtitle
 		optparse = OptionParser.new do |o|
 			o.banner = "Usage: shift_subtitle [OPTIONS] <input_file> <output_file>"
 			o.separator   ""
-			o.on("-o", "--operation=[add|sub]", String,
+			o.on("-o", "--operation [add|sub]", String,
 	       			"Type of operation: add or subtract.")   do |options[:operation]| end
-			o.on("-t", "--time=<time>", String,
+			o.on("-t", "--time <time>", String,
 	       			"Time to shift in the format 'ss,mmm'")   do |options[:time]| end
 			o.separator   ""
 			o.on_tail("-h", "--help", "Show this help message.") do |options[:help]| end
 			o.parse!(argv)
 		end
-		return options, optparse.to_s
+		options_to_attr options, argv
+		return optparse.to_s
 	end
 
-	def save_options(options, argv)
+	def options_to_attr(options, argv)
 		@operation = options[:operation]
 		@time = options[:time]
 		@inputfile = argv[0]
 		@outputfile = argv[1]
+		@help = options[:help]
+	end
+
+	def print_parameters
+		@messenger.puts "Shifting with following parameters:\n" +
+				"\n"					+
+				"Operation:   [#{@operation}]\n"	+
+				"Time:        [#{@time}]\n"		+
+				"Input file:  [#{@inputfile}]\n"	+
+				"Output file: [#{@outputfile}]"
+	end
+
+	def operation
+		@operation == 'add' ? Add.new(@time) : Sub.new(@time)
+	end
+
+	def inputlines
+		File.open(@inputfile).map { |line| line.chomp }
+	end
+
+	def processed_lines
+		OperationPerformer.new(operation).on(inputlines).map { |line| line + "\n" }
+	end
+
+	def write_to_outputfile(lines)
+		File.open(@outputfile, 'w') do |f| 
+			f.write lines
+		end
 	end
 
 	public
@@ -43,23 +69,13 @@ class ShiftSubtitle
 	end
 
 	def start(argv=[])
-		options, usage_msg = parse argv
-		save_options options, argv
-		if !parameters_valid? || options[:help] 
+		usage_msg = parse argv
+		if !parameters_valid? || @help 
 			@messenger.puts usage_msg
 			@kernel.exit 1
 		else
-			lines=File.open(@inputfile).map do |line|
-				line.chomp
-    			end
-			operation = @operation == 'add' ? Add.new(@time) : Sub(@time)
-
-			output = OperationPerformer.new(operation).on(lines).map { |line| line + "\n" }
- 
-			File.open(@outputfile, 'w') do |f| 
-				f.write output
-			end
-
+			print_parameters
+			write_to_outputfile processed_lines
 			@kernel.exit 0
 		end
 	end
