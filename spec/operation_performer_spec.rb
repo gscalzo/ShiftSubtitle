@@ -19,12 +19,12 @@ describe OperationPerformer do
 
 		it "should add given value" do
 			input = ['645',
-				'01:31:51,210 --> 01:31:54,893 ',
+				'00:00:00,574 --> 01:31:54,893 ',
 				'the government is implementing a new policy...']			
 			output = @perform.on(input)
 
 			expected = ['645',
-				'01:31:53,710 --> 01:31:57,393',
+				'00:00:03,074 --> 01:31:57,393',
 				'the government is implementing a new policy...']			
 			output.should == expected
 		end

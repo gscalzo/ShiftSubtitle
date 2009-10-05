@@ -1,3 +1,6 @@
+require 'time'
+require 'date'
+
 class Operation
 	def initialize(v)
 		@value = as_float(v)
@@ -27,7 +30,7 @@ class Operation
 	end
 
 	def format(t)
-		t.strftime("%H:%M:%S,") + "#{t.usec/1000}"
+		t.strftime("%H:%M:%S,") + "#{'%03d'%(t.usec/1000)}"
 	end
 end
 
